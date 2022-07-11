@@ -40,7 +40,17 @@ const deleteDisciplinas = async (req, res) => {
     }
 }
 
+const mediasPorDisciplina = async (req, res) => {
+    try{
+        const media = await service.mediasPorDisciplina(req.body);
+        res.status(200).send(media);
+    } catch(erro) {
+        res.status(500).send(erro);
+    }
+}
+
 module.exports.pegarDisciplinas = pegarDisciplinas;
 module.exports.disciplinasById = disciplinasById;
 module.exports.persistirDisciplinas = persistirDisciplinas;
 module.exports.deleteDisciplinas = deleteDisciplinas;
+module.exports.mediasPorDisciplina = mediasPorDisciplina;

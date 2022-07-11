@@ -52,9 +52,20 @@ const deleteNotas = async (params) => {
 }
 
 const medias = async (params) => {
-    let sqlNotas = `select * from notas where id_aluno = $`
+    let sqlNotas = `select * from notas where id_aluno = $1`
     let query = await db.query(sqlNotas, [params.id])
-    return query;
+    let notas = 0;
+    let pesos = 0;
+    let notasObj = [];
+    let pesosObj = []
+    query.rows.forEach(nota => {
+      notas += parseFloat(nota.nota * nota.peso);
+      pesos += parseFloat(nota.peso);
+      notasObj.push(nota.nota)
+      pesosObj.push(nota.peso)
+    });
+    let media  = notas / pesos;
+    return {msg:`A media do aluno ${params.id} é ${media}`, notas: `${notasObj}`, pesos: `${pesosObj}`, Situacao: `${media >= 7 ? 'Aluno aprovado': media < 5 ? 'Aluno reprovado' : 'Aluno em exame'}`}
 }
 
 module.exports.pegarNotas = pegarNotas;

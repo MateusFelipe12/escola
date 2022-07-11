@@ -39,6 +39,7 @@ const deleteNotas = async (req, res) => {
     res.status(500).send(err);
     }
 }
+
 const medias = async (req, res) => {
     try {
         const notas = await service.medias(req.body);
@@ -47,6 +48,7 @@ const medias = async (req, res) => {
         res.status(500).send(erro);
     }
 }
+
 
 module.exports.pegarNotas = pegarNotas;
 module.exports.notasById = notasById;

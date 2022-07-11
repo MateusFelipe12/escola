@@ -51,7 +51,47 @@ const deleteDisciplinas = async (params) => {
     return query.rowCount == 1;
 } 
 
+const mediasPorDisciplina = async (params) => {
+  const {id_disciplina, data_inicial, data_final} = params;
+
+  let sqlMediaAlunos = `
+  select 
+    n.nota,
+    n.peso,
+    p.nome,
+    a.id
+  from disciplinas as d
+  inner join notas as n on (d.id = n.id_disciplina)
+  inner join alunos as a on (n.id_aluno = a.id)
+  inner join pessoas as p on (p.id = a.id_pessoa)
+  where datahora between $1 and $2 and d.id = $3`
+
+  let query = await db.query(sqlMediaAlunos, [data_inicial, data_final, id_disciplina]);
+  console.log('aqui');
+  let notas = 0;
+  let pesos = 0;
+  let retorno = [];
+  let aluno = query.rows;
+  let id = Number(aluno[0].id)
+  let media = 0 ;
+  for(let i = 0; i < aluno.length; i++){
+    notas += parseFloat(aluno[i].nota * aluno[i].peso);
+    pesos += parseFloat(aluno[i].peso);
+    if(!aluno[i+1] || aluno[i].id !== aluno[i + 1].id){
+      console.log("ok");
+      id = aluno[i].id;
+      media  = notas / pesos;
+      retorno.push({msg:`A media do aluno ${aluno[i].nome} é ${media}`, Situacao: `${media >= 7 ? 'Aluno aprovado': media < 5 ? 'Aluno reprovado' : 'Aluno em exame'}`});
+      notas = pesos = 0;
+    };
+  }
+  return retorno;
+}
+
+
+
 module.exports.pegarDisciplinas = pegarDisciplinas;
 module.exports.disciplinasById = disciplinasById;
 module.exports.persistirDisciplinas = persistirDisciplinas;
 module.exports.deleteDisciplinas = deleteDisciplinas;
+module.exports.mediasPorDisciplina = mediasPorDisciplina;
